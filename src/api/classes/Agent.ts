@@ -1,4 +1,4 @@
-import { CloseEvent, WebSocket } from 'ws';
+import { CloseEvent, MessageEvent, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
 
@@ -26,6 +26,20 @@ class Agent {
       this._websocket.onopen = () => {
         this._id = uuidv4();
         resolve('Success');
+      };
+
+      this._websocket.onmessage = (event: MessageEvent) => {
+        console.log(
+          `\x1b[33mReceiving message: ${event.data.toString()} \x1b[0m`
+        );
+        console.log(
+          `\x1b[30mReply message: ${
+            event.data.toString() === 'Hejsan' ? 'Hej då' : 'Hanson'
+          }\x1b[0m`
+        );
+        this._websocket?.send(
+          event.data.toString() === 'Hejsan' ? 'Hej då' : 'Hanson'
+        );
       };
 
       this._websocket.onclose = (event: CloseEvent) => {
