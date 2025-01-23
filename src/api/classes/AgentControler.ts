@@ -10,8 +10,8 @@ class AgentControler {
     this._agents = [];
   }
 
-  async createAgent(url: string) {
-    const newAgent = new Agent(url);
+  async createAgent(url: string, name: string) {
+    const newAgent = new Agent(url, name);
     await newAgent.init();
     this._agents.push(newAgent);
     return newAgent;

@@ -3,17 +3,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
 
 export const SerializedAgent = Type.Object({
-  url: Type.String(),
-  id: Type.String()
+  name: Type.String(),
+  id: Type.String(),
+  url: Type.String()
 });
 
 class Agent {
   _url: string;
+  _name: string;
   _websocket: WebSocket | null;
   _id: string;
 
-  constructor(url: string) {
+  constructor(url: string, name: string) {
     this._url = url;
+    this._name = name;
     this._websocket = null;
     this._id = '';
   }
@@ -57,13 +60,14 @@ class Agent {
   }
 
   close(closeEvent?: CloseEvent) {
-    if (closeEvent) console.log(closeEvent);
+    // if (closeEvent) console.log(closeEvent);
     this._websocket?.close();
     this._websocket = null;
   }
 
   serialize(): Static<typeof SerializedAgent> {
     return {
+      name: this._name,
       id: this._id,
       url: this._url
     };

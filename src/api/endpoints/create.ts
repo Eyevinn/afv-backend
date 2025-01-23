@@ -6,10 +6,11 @@ import { SerializedAgent } from '../classes/Agent';
 const opts = {
   schema: {
     body: {
-      required: ['url'],
+      required: ['url', 'name'],
       type: 'object',
       properties: {
-        url: { type: 'string' }
+        url: { type: 'string' },
+        name: { type: 'string' }
       }
     },
     response: {
@@ -23,7 +24,8 @@ const opts = {
 };
 
 const CreateBodyReq = Type.Object({
-  url: Type.String()
+  url: Type.String(),
+  name: Type.String()
 });
 
 const createAgent: FastifyPluginCallback = (fastify, _, next) => {
@@ -31,9 +33,9 @@ const createAgent: FastifyPluginCallback = (fastify, _, next) => {
     Body: Static<typeof CreateBodyReq>;
     Reply: Static<typeof SerializedAgent>;
   }>('/agents', opts, async (request, reply) => {
-    const { url } = request.body;
+    const { url, name } = request.body;
 
-    const newAgent = await AgentControler.createAgent(url);
+    const newAgent = await AgentControler.createAgent(url, name);
 
     reply.code(200).send(newAgent.serialize());
   });
