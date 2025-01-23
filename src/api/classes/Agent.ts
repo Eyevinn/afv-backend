@@ -25,6 +25,9 @@ class Agent {
       });
       this._websocket.onopen = () => {
         this._id = uuidv4();
+        console.log(
+          `\x1b[32mWebsocket successfully connected to: ${this._url}.\x1b[0m`
+        );
         resolve('Success');
       };
 
