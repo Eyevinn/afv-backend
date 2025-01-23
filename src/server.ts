@@ -1,4 +1,4 @@
-import api from './api';
+import api from './api/api';
 
 const server = api({ title: '@eyevinn/typescript-nodejs' });
 

@@ -5,6 +5,9 @@ import swaggerUI from '@fastify/swagger-ui';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { Static, Type } from '@sinclair/typebox';
 import { FastifyPluginCallback } from 'fastify';
+import createAgent from './create';
+import deleteAgent from './delete';
+import getAgents from './get';
 
 const HelloWorld = Type.String({
   description: 'The magical words!'
@@ -14,7 +17,11 @@ export interface HealthcheckOptions {
   title: string;
 }
 
-const healthcheck: FastifyPluginCallback<HealthcheckOptions> = (fastify, opts, next) => {
+const healthcheck: FastifyPluginCallback<HealthcheckOptions> = (
+  fastify,
+  opts,
+  next
+) => {
   fastify.get<{ Reply: Static<typeof HelloWorld> }>(
     '/',
     {
@@ -59,7 +66,9 @@ export default (opts: ApiOptions) => {
   });
 
   api.register(healthcheck, { title: opts.title });
-  // register other API routes here
+  api.register(getAgents);
+  api.register(createAgent);
+  api.register(deleteAgent);
 
   return api;
-}
+};

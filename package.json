@@ -23,13 +23,16 @@
     "@sinclair/typebox": "^0.29.0",
     "fastify": "4.23.2",
     "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "uuid": "^11.0.5",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.2",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.18",
+    "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "eslint": "^8.33.0",
