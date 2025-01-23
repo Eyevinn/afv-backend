@@ -20,7 +20,9 @@ class Agent {
 
   init() {
     return new Promise((resolve, reject) => {
-      this._websocket = new WebSocket(this._url);
+      this._websocket = new WebSocket(this._url, [], {
+        handshakeTimeout: 5000
+      });
       this._websocket.onopen = () => {
         this._id = uuidv4();
         resolve('Success');
