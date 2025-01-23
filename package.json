@@ -1,7 +1,7 @@
 {
-  "name": "@eyevinn/typescript-nodejs",
+  "name": "afv-backend",
   "version": "1.0.0",
-  "description": "The default typescript-nodejs template for eyevinn projects",
+  "description": "Audio follow video service using websocket connections. A test websocket server is included.",
   "scripts": {
     "test": "jest",
     "prepare": "husky install",

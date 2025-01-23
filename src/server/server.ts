@@ -12,6 +12,13 @@ wss.on('connection', function connection(ws) {
   console.log('\x1b[35mPress any number to send a message...\x1b[0m');
   ws.on('error', console.error);
 
+  ws.on('close', () => {
+    console.log('\x1b[31mConnection was closed.\x1b[0m');
+    console.log(
+      `\x1b[33mWaiting for WebSocket connection at: ws://localhost:${PORT}...\x1b[0m`
+    );
+  });
+
   ws.on('message', function message(data) {
     console.log(`\x1b[30mReceived message: ${data.toString()}\x1b[0m`);
   });
