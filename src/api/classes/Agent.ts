@@ -1,6 +1,8 @@
-import { CloseEvent, MessageEvent, WebSocket } from 'ws';
+import { MessageEvent, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
+import translator from '../translator/translator';
+import { OutgoingMessage } from '../translator/message-mapping';
 
 export const SerializedAgent = Type.Object({
   name: Type.String(),
@@ -35,21 +37,21 @@ class Agent {
       };
 
       this._websocket.onmessage = (event: MessageEvent) => {
-        console.log(
-          `\x1b[33mReceiving message: ${event.data.toString()} \x1b[0m`
-        );
-        console.log(
-          `\x1b[30mReply message: ${
-            event.data.toString() === 'Hejsan' ? 'Hej då' : 'Hanson'
-          }\x1b[0m`
-        );
-        this._websocket?.send(
-          event.data.toString() === 'Hejsan' ? 'Hej då' : 'Hanson'
-        );
+        const receivedMessage = event.data.toString();
+        const outgoingMessage = translator(event.data.toString());
+
+        console.log(`\x1b[33mReceiving message: ${receivedMessage} \x1b[0m`);
+
+        outgoingMessage.forEach((msg: string) => {
+          console.log(`\x1b[30mReply message: ${msg}\x1b[0m`);
+          this._websocket?.send(msg);
+        });
       };
 
-      this._websocket.onclose = (event: CloseEvent) => {
-        this.close(event);
+      this._websocket.onclose = () => {
+        // if (event) console.log(event);
+        console.log('Closing connection');
+        this._websocket = null;
       };
 
       this._websocket.onerror = (error) => {
@@ -59,10 +61,8 @@ class Agent {
     });
   }
 
-  close(closeEvent?: CloseEvent) {
-    // if (closeEvent) console.log(closeEvent);
+  close() {
     this._websocket?.close();
-    this._websocket = null;
   }
 
   serialize(): Static<typeof SerializedAgent> {
