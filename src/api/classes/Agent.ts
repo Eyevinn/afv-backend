@@ -14,12 +14,14 @@ class Agent {
   _name: string;
   _websocket: WebSocket | null;
   _id: string;
+  _messageTranslator: MessageTranslator;
 
   constructor(url: string, name: string) {
     this._url = url;
     this._name = name;
     this._websocket = null;
     this._id = '';
+    this._messageTranslator = new MessageTranslator();
   }
 
   init() {
@@ -37,7 +39,7 @@ class Agent {
 
       this._websocket.onmessage = (event: MessageEvent) => {
         const receivedMessage = event.data.toString();
-        const outgoingMessage = MessageTranslator.translate(
+        const outgoingMessage = this._messageTranslator.translate(
           event.data.toString()
         );
 

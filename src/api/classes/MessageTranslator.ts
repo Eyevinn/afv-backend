@@ -72,4 +72,4 @@ class MessageTranslator {
   }
 }
 
-export default new MessageTranslator();
+export default MessageTranslator;
