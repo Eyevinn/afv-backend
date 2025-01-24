@@ -1,8 +1,7 @@
 import { MessageEvent, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
-import translator from '../translator/translator';
-import { OutgoingMessage } from '../translator/message-mapping';
+import MessageTranslator from './MessageTranslator';
 
 export const SerializedAgent = Type.Object({
   name: Type.String(),
@@ -38,9 +37,17 @@ class Agent {
 
       this._websocket.onmessage = (event: MessageEvent) => {
         const receivedMessage = event.data.toString();
-        const outgoingMessage = translator(event.data.toString());
+        const outgoingMessage = MessageTranslator.translate(
+          event.data.toString()
+        );
 
         console.log(`\x1b[33mReceiving message: ${receivedMessage} \x1b[0m`);
+
+        if (!outgoingMessage.length) {
+          console.log(
+            `\x1b[30mNo message sent because of no state change.\x1b[0m`
+          );
+        }
 
         outgoingMessage.forEach((msg: string) => {
           console.log(`\x1b[30mReply message: ${msg}\x1b[0m`);
