@@ -6,7 +6,6 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import createAgent from './endpoints/create';
 import deleteAgent from './endpoints/delete';
 import getAgents from './endpoints/get';
-import healthcheck from './endpoints/healthcheck';
 
 export interface ApiOptions {
   title: string;
@@ -34,7 +33,6 @@ export default (opts: ApiOptions) => {
     routePrefix: '/docs'
   });
 
-  api.register(healthcheck);
   api.register(getAgents);
   api.register(createAgent);
   api.register(deleteAgent);

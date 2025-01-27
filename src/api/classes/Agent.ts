@@ -6,12 +6,8 @@ import MessageTranslator from './MessageTranslator';
 export const SerializedAgent = Type.Object({
   name: Type.String(),
   id: Type.String(),
-  url: Type.String()
-});
-
-export const AgentHealthCheck = Type.Object({
-  id: Type.String(),
-  connected: Type.Boolean()
+  url: Type.String(),
+  status: Type.String()
 });
 
 class Agent {
@@ -79,18 +75,12 @@ class Agent {
     this._websocket?.close();
   }
 
-  get healthcheck(): Static<typeof AgentHealthCheck> {
-    return {
-      id: this._id,
-      connected: !!this._websocket
-    };
-  }
-
   serialize(): Static<typeof SerializedAgent> {
     return {
       name: this._name,
       id: this._id,
-      url: this._url
+      url: this._url,
+      status: this._websocket ? 'Connected' : 'Disconnected'
     };
   }
 }
