@@ -1,7 +1,9 @@
 import { Static, Type } from '@sinclair/typebox';
-import Agent, { SerializedAgent } from './Agent';
+import Agent, { AgentHealthCheck, SerializedAgent } from './Agent';
 
 export const SerializedAgents = Type.Array(SerializedAgent);
+
+export const AgentsHealthCheck = Type.Array(AgentHealthCheck);
 
 class AgentControler {
   _agents: Agent[];
@@ -22,6 +24,10 @@ class AgentControler {
       .filter((agent) => ids.includes(agent._id))
       ?.forEach((agent) => agent.close());
     this._agents = this._agents.filter((agent) => !ids.includes(agent._id));
+  }
+
+  get healthcheck(): Static<typeof AgentsHealthCheck> {
+    return this._agents.map((agent) => agent.healthcheck);
   }
 
   get serializedAgents(): Static<typeof SerializedAgents> {

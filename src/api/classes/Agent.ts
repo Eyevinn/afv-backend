@@ -9,6 +9,11 @@ export const SerializedAgent = Type.Object({
   url: Type.String()
 });
 
+export const AgentHealthCheck = Type.Object({
+  id: Type.String(),
+  connected: Type.Boolean()
+});
+
 class Agent {
   _url: string;
   _name: string;
@@ -72,6 +77,13 @@ class Agent {
 
   close() {
     this._websocket?.close();
+  }
+
+  get healthcheck(): Static<typeof AgentHealthCheck> {
+    return {
+      id: this._id,
+      connected: !!this._websocket
+    };
   }
 
   serialize(): Static<typeof SerializedAgent> {

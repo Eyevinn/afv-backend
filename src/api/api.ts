@@ -3,41 +3,10 @@ import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { Static, Type } from '@sinclair/typebox';
-import { FastifyPluginCallback } from 'fastify';
 import createAgent from './endpoints/create';
 import deleteAgent from './endpoints/delete';
 import getAgents from './endpoints/get';
-
-const HelloWorld = Type.String({
-  description: 'The magical words!'
-});
-
-export interface HealthcheckOptions {
-  title: string;
-}
-
-const healthcheck: FastifyPluginCallback<HealthcheckOptions> = (
-  fastify,
-  opts,
-  next
-) => {
-  fastify.get<{ Reply: Static<typeof HelloWorld> }>(
-    '/',
-    {
-      schema: {
-        description: 'Say hello',
-        response: {
-          200: HelloWorld
-        }
-      }
-    },
-    async (_, reply) => {
-      reply.send('Hello, world! I am ' + opts.title);
-    }
-  );
-  next();
-};
+import healthcheck from './endpoints/healthcheck';
 
 export interface ApiOptions {
   title: string;
@@ -65,7 +34,7 @@ export default (opts: ApiOptions) => {
     routePrefix: '/docs'
   });
 
-  api.register(healthcheck, { title: opts.title });
+  api.register(healthcheck);
   api.register(getAgents);
   api.register(createAgent);
   api.register(deleteAgent);
