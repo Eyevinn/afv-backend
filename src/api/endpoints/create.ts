@@ -2,6 +2,7 @@ import { Static, Type } from '@sinclair/typebox';
 import { FastifyPluginCallback } from 'fastify';
 import AgentControler from '../classes/AgentControler';
 import { SerializedAgent } from '../classes/Agent';
+import Logger from '../classes/Logger';
 
 const opts = {
   schema: {
@@ -11,13 +12,6 @@ const opts = {
       properties: {
         url: { type: 'string' },
         name: { type: 'string' }
-      }
-    },
-    response: {
-      500: {
-        properties: {
-          error: { type: 'string' }
-        }
       }
     }
   }

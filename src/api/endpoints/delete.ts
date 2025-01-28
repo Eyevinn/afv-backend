@@ -10,13 +10,6 @@ const opts = {
       properties: {
         ids: { type: 'array' }
       }
-    },
-    response: {
-      500: {
-        properties: {
-          error: { type: 'string' }
-        }
-      }
     }
   }
 };

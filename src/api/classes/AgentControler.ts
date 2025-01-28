@@ -10,9 +10,14 @@ class AgentControler {
     this._agents = [];
   }
 
+  isUniqueUrl(url: string) {
+    return !this._agents.find((agent) => agent._url === url);
+  }
+
   async createAgent(url: string, name: string) {
+    if (!this.isUniqueUrl(url)) throw new Error('WebSocket URL already in use');
     const newAgent = new Agent(url, name);
-    await newAgent.init();
+    await newAgent.connect();
     this._agents.push(newAgent);
     return newAgent;
   }
