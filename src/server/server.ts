@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
 import ReadLine from 'readline';
 import { messages } from './messages';
 import Logger from '../api/classes/Logger';
@@ -12,11 +12,6 @@ wss.on('connection', (ws) => {
   // A function to handle keypress
   // Depending on the key it send a message from the messages file
   const listener = (str: string, key: any) => {
-    if (key.ctrl && key.name === 'c') {
-      Logger.red('ENDING...');
-      process.exit();
-    }
-
     const strAsNumber: keyof typeof messages = parseInt(
       str,
       10
@@ -27,6 +22,7 @@ wss.on('connection', (ws) => {
       ws.send(messages[strAsNumber] || 'No message found');
     }
   };
+  process.stdin.on('keypress', listener);
 
   Logger.green(
     `Websocket successfully connected - ${wss.clients.size} client${
@@ -58,13 +54,6 @@ wss.on('connection', (ws) => {
   ws.on('message', function message(data) {
     Logger.black(`Received message: ${data.toString()}`);
   });
-
-  // When pressing a number call listener
-  ReadLine.emitKeypressEvents(process.stdin);
-  if (process.stdin.setRawMode != null) {
-    process.stdin.setRawMode(true);
-  }
-  process.stdin.on('keypress', listener);
 });
 
 wss.on('error', (error) => {
@@ -74,3 +63,17 @@ wss.on('error', (error) => {
 wss.on('close', () => {
   Logger.red('WebSocket Server Close');
 });
+
+// When pressing a number call listener
+ReadLine.emitKeypressEvents(process.stdin);
+if (process.stdin.setRawMode != null) {
+  process.stdin.setRawMode(true);
+}
+
+const defaultListener = (str: string, key: any) => {
+  if (key.ctrl && key.name === 'c') {
+    Logger.red('ENDING...');
+    process.exit();
+  }
+};
+process.stdin.on('keypress', defaultListener);
