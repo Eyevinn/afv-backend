@@ -2,7 +2,7 @@ import { CloseEvent, MessageEvent, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
 import MessageTranslator from './MessageTranslator';
-import Logger from './Logger';
+import Logger from '../utils/Logger';
 
 export const SerializedAgent = Type.Object({
   name: Type.String(),
@@ -67,7 +67,7 @@ class Agent {
       };
 
       this._websocket.onclose = (event: CloseEvent) => {
-        Logger.red('Closing connection...');
+        Logger.yellow('Closing connection.');
         this._websocket = null;
         if (event.code > 1005 && this._hasSuccesfullyConnected) {
           this.reconnect();
@@ -82,16 +82,17 @@ class Agent {
   }
 
   reconnect() {
-    if (this._reconnectionAttempts === 0)
-      Logger.yellow('Starting refetching...');
+    if (this._reconnectionAttempts === 0) Logger.blue('Starting refetching...');
     this._reconnectionAttempts += 1;
     if (this._reconnectionAttempts < 6) {
       setTimeout(() => {
-        Logger.yellow(`Reconnect attempt ${this._reconnectionAttempts}...`);
+        Logger.magenta(`Reconnect attempt ${this._reconnectionAttempts}...`);
         this.connect()?.catch((e: Error) => {
           Logger.red('WebSocket Reconnect Error: ' + e.message);
         });
       }, 6000);
+    } else {
+      Logger.magenta('Stopping refetching.');
     }
   }
 

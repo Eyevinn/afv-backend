@@ -6,7 +6,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import createAgent from './endpoints/create';
 import deleteAgent from './endpoints/delete';
 import getAgents from './endpoints/get';
-import Logger from './classes/Logger';
+import errorHandler from './utils/error-handler';
 
 export interface ApiOptions {
   title: string;
@@ -16,17 +16,6 @@ export default (opts: ApiOptions) => {
   const api = fastify({
     ignoreTrailingSlash: true
   }).withTypeProvider<TypeBoxTypeProvider>();
-
-  api.setErrorHandler(function (error, _, reply) {
-    // Log error
-    Logger.red(
-      `[${error.code ?? 'No Code'}]: ${error.message ?? 'No Message'}`
-    );
-    // Send error response
-    reply
-      .status(500)
-      .send({ statusCode: 500, error: error.message ?? 'No Message' });
-  });
 
   // register the cors plugin, configure it for better security
   api.register(cors);
@@ -44,6 +33,9 @@ export default (opts: ApiOptions) => {
   api.register(swaggerUI, {
     routePrefix: '/docs'
   });
+
+  // register a global error handler
+  api.setErrorHandler(errorHandler);
 
   api.register(getAgents);
   api.register(createAgent);

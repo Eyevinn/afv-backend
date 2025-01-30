@@ -1,7 +1,7 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import ReadLine from 'readline';
 import { messages } from './messages';
-import Logger from '../api/classes/Logger';
+import Logger from '../api/utils/Logger';
 
 const PORT = 8080;
 // Create websocket server using PORT
@@ -35,7 +35,7 @@ wss.on('connection', (ws) => {
   // Remove listener
   ws.on('close', () => {
     process.stdin.off('keypress', listener);
-    Logger.red('Connection was closed.');
+    Logger.blue('Connection was closed.');
     if (wss.clients.size > 0) {
       Logger.yellow(
         `There ${wss.clients.size > 1 ? 'are' : 'is'} still ${
@@ -61,7 +61,7 @@ wss.on('error', (error) => {
 });
 
 wss.on('close', () => {
-  Logger.red('WebSocket Server Close');
+  Logger.blue('WebSocket Server Close');
 });
 
 // When pressing a number call listener
@@ -72,7 +72,7 @@ if (process.stdin.setRawMode != null) {
 
 const defaultListener = (str: string, key: any) => {
   if (key.ctrl && key.name === 'c') {
-    Logger.red('ENDING...');
+    Logger.blue('Exiting.');
     process.exit();
   }
 };

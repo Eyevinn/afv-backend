@@ -2,3 +2,4 @@ node_modules
 .git
 **/__mocks__
 **/*.test.ts
+src/server

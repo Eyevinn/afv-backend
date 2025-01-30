@@ -1,7 +1,8 @@
-ARG NODE_IMAGE=node:18-alpine
+ARG NODE_IMAGE=node:22-alpine
 
 FROM ${NODE_IMAGE}
 ENV NODE_ENV=production
+ENV PORT=8000
 EXPOSE 8000
 RUN mkdir /app
 RUN chown node:node /app
