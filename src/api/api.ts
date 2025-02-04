@@ -25,7 +25,8 @@ export default (opts: ApiOptions) => {
     swagger: {
       info: {
         title: opts.title,
-        description: 'hello',
+        description:
+          'Create, list and delete AFV agents. Each agent establishes a WebSocket connection to a WebSocket server and translates incoming messages.',
         version: 'v1'
       }
     }

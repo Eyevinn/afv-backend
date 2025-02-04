@@ -1,19 +1,38 @@
 # AFV-BACKEND
 
-<!--
-
 ## Requirements
-Add any external project dependencies such as node.js version etc here
+
+Node.js >= 18.15.0 ( LTS )
 
 ## Installation / Usage
 
-Add clear instructions on how to use the project here
+To install dependencies run:
+
+```
+npm i
+```
+
+To start the AFV-Backend run:
+
+```
+npm start
+```
 
 ## Development
 
-Add clear instructions on how to start development of the project here
+To start the AFV-Backend in dev mode run:
 
--->
+```
+npm run dev
+```
+
+A websocket server is also available in the project to test the AFV-Backend. To start the websocket server run:
+
+```
+npm run dev-server
+```
+
+Once the websoket server is running and you establish a websocket connection with the server, you can press the 0-9 keys to send messages to the AFV-Backend. The messages can be changes by editing the file src/server/messages.ts.
 
 ### Contributing
 

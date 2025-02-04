@@ -12,19 +12,21 @@ export const SerializedAgent = Type.Object({
 });
 
 class Agent {
+  _id: string;
   _url: string;
   _name: string;
+  _websocket: WebSocket | null;
+  _messageTranslator: MessageTranslator;
   _reconnectionAttempts: number;
   _hasSuccesfullyConnected: boolean;
-  _websocket: WebSocket | null;
-  _id: string;
-  _messageTranslator: MessageTranslator;
+  _isDeleting: boolean;
 
   constructor(url: string, name: string) {
     this._url = url;
     this._name = name;
     this._reconnectionAttempts = 0;
     this._hasSuccesfullyConnected = false;
+    this._isDeleting = false;
     this._websocket = null;
     this._id = '';
     this._messageTranslator = new MessageTranslator();
@@ -81,29 +83,34 @@ class Agent {
     });
   }
 
-  reconnect() {
+  private reconnect() {
     if (this._reconnectionAttempts === 0) Logger.blue('Starting refetching...');
     this._reconnectionAttempts += 1;
     if (this._reconnectionAttempts < 6) {
       setTimeout(() => {
-        Logger.magenta(`Reconnect attempt ${this._reconnectionAttempts}...`);
-        this.connect()?.catch((e: Error) => {
-          Logger.red('WebSocket Reconnect Error: ' + e.message);
-        });
+        if (this._isDeleting) {
+          Logger.magenta('Agent has been deleted. Canceling reconnection.');
+        } else {
+          Logger.magenta(`Reconnect attempt ${this._reconnectionAttempts}...`);
+          this.connect()?.catch((e: Error) => {
+            Logger.red('WebSocket Reconnect Error: ' + e.message);
+          });
+        }
       }, 6000);
     } else {
       Logger.magenta('Stopping refetching.');
     }
   }
 
-  refetchState() {
+  private refetchState() {
     Logger.yellow('Refetching state');
     this._websocket?.send(
       JSON.stringify({ type: 'get', resource: '/video/nodess' })
     );
   }
 
-  close() {
+  delete() {
+    this._isDeleting = true;
     this._websocket?.close();
   }
 

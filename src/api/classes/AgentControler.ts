@@ -10,7 +10,7 @@ class AgentControler {
     this._agents = [];
   }
 
-  isUniqueUrl(url: string) {
+  private isUniqueUrl(url: string) {
     return !this._agents.find((agent) => agent._url === url);
   }
 
@@ -25,7 +25,7 @@ class AgentControler {
   async deleteAgents(ids: string[]) {
     this._agents
       .filter((agent) => ids.includes(agent._id))
-      ?.forEach((agent) => agent.close());
+      ?.forEach((agent) => agent.delete());
     this._agents = this._agents.filter((agent) => !ids.includes(agent._id));
   }
 

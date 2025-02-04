@@ -4,11 +4,32 @@ import AgentControler, { SerializedAgents } from '../classes/AgentControler';
 
 const opts = {
   schema: {
+    description: 'Deletes one or several agents.',
     body: {
       required: ['ids'],
       type: 'object',
       properties: {
-        ids: { type: 'array' }
+        ids: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        }
+      }
+    },
+    response: {
+      200: {
+        description: 'Successful response',
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            id: { type: 'string' },
+            url: { type: 'string' },
+            status: { type: 'string' }
+          }
+        }
       }
     }
   }
