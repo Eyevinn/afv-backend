@@ -47,6 +47,9 @@ class Agent {
         this._hasSuccesfullyConnected = true;
         this._reconnectionAttempts = 0;
         Logger.green(`Websocket successfully connected to: ${this._url}.`);
+        this._websocket?.send(
+          '{"resource":"/video/nodes/","type":"subscribe"}'
+        );
         resolve('Success');
       };
 

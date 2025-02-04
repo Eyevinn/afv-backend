@@ -32,7 +32,23 @@ A websocket server is also available in the project to test the AFV-Backend. To 
 npm run dev-server
 ```
 
-Once the websoket server is running and you establish a websocket connection with the server, you can press the 0-9 keys to send messages to the AFV-Backend. The messages can be changes by editing the file src/server/messages.ts.
+Once the websoket server is running and you have established a websocket connection with the server, you can press the 0-9 keys to send messages to the AFV-Backend. The messages can be changes by editing the file src/server/messages.ts.
+
+## Deployment
+
+If you have docker installed on your local machine you may create a docker image and run it in a simple container.
+
+To create a docker image taged "afv-backend" run:
+
+```
+docker build -t=afv-backend .
+```
+
+To build a docker image and run it in a simple container run:
+
+```
+docker-compose up
+```
 
 ### Contributing
 
