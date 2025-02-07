@@ -80,7 +80,7 @@ class Agent {
       };
 
       this._websocket.onerror = () => {
-        const error = new Error('Failed to connect to WebSocket');
+        const error = new Error(`Failed to connect to WebSocket: ${this._url}`);
         reject(error);
       };
     });
@@ -108,7 +108,7 @@ class Agent {
   private refetchState() {
     Logger.yellow('Refetching state');
     this._websocket?.send(
-      JSON.stringify({ type: 'get', resource: '/video/nodess' })
+      JSON.stringify({ type: 'get', resource: '/video/nodes' })
     );
   }
 
