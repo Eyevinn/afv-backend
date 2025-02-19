@@ -38,37 +38,19 @@ class Agent {
         handshakeTimeout: 5000
       });
       this._websocket.onopen = () => {
-        if (this._reconnectionAttempts > 0) {
-          this.refetchState();
-        }
         if (!this._id) {
           this._id = uuidv4();
         }
         this._hasSuccesfullyConnected = true;
         this._reconnectionAttempts = 0;
         Logger.green(`Websocket successfully connected to: ${this._url}.`);
-        this._websocket?.send(
-          '{"resource":"/video/nodes/","type":"subscribe"}'
-        );
+        this.subscribeToVideoNodes();
+        this.getAudioOutputs();
         resolve('Success');
       };
 
       this._websocket.onmessage = (event: MessageEvent) => {
-        const receivedMessage = event.data.toString();
-        const outgoingMessage = this._messageTranslator.translate(
-          event.data.toString()
-        );
-
-        Logger.yellow(`Receiving message: ${receivedMessage}`);
-
-        if (!outgoingMessage.length) {
-          Logger.black('No message sent because of no state change.');
-        }
-
-        outgoingMessage.forEach((msg: string) => {
-          Logger.black(`Reply message: ${msg}`);
-          this._websocket?.send(msg);
-        });
+        this.handleMessage(event.data.toString());
       };
 
       this._websocket.onclose = (event: CloseEvent) => {
@@ -105,11 +87,29 @@ class Agent {
     }
   }
 
-  private refetchState() {
-    Logger.yellow('Refetching state');
-    this._websocket?.send(
-      JSON.stringify({ type: 'get', resource: '/video/nodes' })
+  private subscribeToVideoNodes() {
+    if (!this._websocket) return;
+    Logger.yellow('Subscribing to video nodes');
+    this._websocket.send('{"resource":"/video/nodes","type":"subscribe"}');
+  }
+
+  private getAudioOutputs() {
+    if (!this._websocket) return;
+    this._websocket.send('{"resource":"/audio/outputs","type":"get"}');
+  }
+
+  private handleMessage(msg: string) {
+    if (!this._websocket) return;
+    const outgoingMessages = this._messageTranslator.translate(
+      msg,
+      this._websocket
     );
+    if (!outgoingMessages.length) return;
+
+    outgoingMessages.forEach((msg: string) => {
+      Logger.black(`Reply message: ${msg}`);
+      this._websocket?.send(msg);
+    });
   }
 
   delete() {
