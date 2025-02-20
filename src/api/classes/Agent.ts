@@ -116,7 +116,7 @@ class Agent {
     if (!outgoingMessages.length) return;
 
     outgoingMessages.forEach((msg: string) => {
-      Logger.green(`Reply message: ${msg}`);
+      Logger.green(`Reply: ${msg}`);
       this._websocket?.send(msg);
     });
   }
