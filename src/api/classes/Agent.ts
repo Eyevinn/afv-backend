@@ -20,6 +20,7 @@ class Agent {
   _reconnectionAttempts: number;
   _hasSuccesfullyConnected: boolean;
   _isDeleting: boolean;
+  _healthCheckInterval: ReturnType<typeof setInterval> | undefined;
 
   constructor(url: string, name: string) {
     this._url = url;
@@ -44,6 +45,7 @@ class Agent {
         this._hasSuccesfullyConnected = true;
         this._reconnectionAttempts = 0;
         Logger.green(`Websocket successfully connected to: ${this._url}.`);
+        this.activateHealthCheck();
         this.subscribeToVideoNodes();
         this.getAudioOutputs();
         resolve('Success');
@@ -55,6 +57,7 @@ class Agent {
 
       this._websocket.onclose = (event: CloseEvent) => {
         Logger.yellow('Closing connection.');
+        clearInterval(this._healthCheckInterval);
         this._websocket = null;
         if (event.code > 1005 && this._hasSuccesfullyConnected) {
           this.reconnect();
@@ -68,8 +71,17 @@ class Agent {
     });
   }
 
+  private activateHealthCheck() {
+    if (!this._websocket) return;
+    Logger.cyan('Starting ping');
+    this._healthCheckInterval = setInterval(() => {
+      this._websocket?.ping('ping');
+    }, 30000);
+  }
+
   private reconnect() {
-    if (this._reconnectionAttempts === 0) Logger.blue('Starting refetching...');
+    if (this._reconnectionAttempts === 0)
+      Logger.blue('Starting reconnection...');
     this._reconnectionAttempts += 1;
     if (this._reconnectionAttempts < 6) {
       setTimeout(() => {
@@ -83,7 +95,7 @@ class Agent {
         }
       }, 6000);
     } else {
-      Logger.magenta('Stopping refetching.');
+      Logger.magenta('Stopping reconnection.');
     }
   }
 
@@ -100,14 +112,11 @@ class Agent {
 
   private handleMessage(msg: string) {
     if (!this._websocket) return;
-    const outgoingMessages = this._messageTranslator.translate(
-      msg,
-      this._websocket
-    );
+    const outgoingMessages = this._messageTranslator.translate(msg);
     if (!outgoingMessages.length) return;
 
     outgoingMessages.forEach((msg: string) => {
-      Logger.black(`Reply message: ${msg}`);
+      Logger.green(`Reply message: ${msg}`);
       this._websocket?.send(msg);
     });
   }

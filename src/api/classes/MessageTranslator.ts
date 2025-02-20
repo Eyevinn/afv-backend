@@ -1,4 +1,3 @@
-import { WebSocket } from 'ws';
 import Logger from '../utils/Logger';
 import DeepDiff from 'deep-diff';
 
@@ -128,47 +127,35 @@ class MessageTranslator {
     this._outputs = null;
   }
 
-  mappedOutputs(output: string) {
+  mappedOutput(output: string) {
+    let outputName = '';
     switch (output) {
       case VideoNodes.TRANSITION:
-        return OutputNames.PROGRAM;
+        outputName = OutputNames.PROGRAM;
+        break;
       case VideoNodes.AUX_1_SELECT:
-        return OutputNames.AUX_1;
+        outputName = OutputNames.AUX_1;
+        break;
       case VideoNodes.AUX_2_SELECT:
-        return OutputNames.AUX_2;
+        outputName = OutputNames.AUX_2;
+        break;
       case VideoNodes.ISO_1_SELECT:
-        return OutputNames.ISO_2;
+        outputName = OutputNames.ISO_2;
+        break;
       case VideoNodes.ISO_2_SELECT:
-        return OutputNames.ISO_2;
+        outputName = OutputNames.ISO_2;
+        break;
     }
+    if (!outputName) return;
+    return this._outputs?.[outputName];
   }
 
-  translate(msg: string, ws: WebSocket): string[] {
+  translate(msg: string): string[] {
     const parsedMsg: IncomingMessage = JSON.parse(msg);
     const returnMessages: Array<string | string[]> = [];
-    Logger.green(JSON.stringify(parsedMsg));
     switch (parsedMsg.type) {
       case MessageTypes.GET_RESPONSE:
-        if (!parsedMsg.body) break;
-        if (parsedMsg.resource === '/audio/outputs') {
-          this._outputs = parsedMsg.body as Outputs;
-          for (const output in this._outputs) {
-            ws.send(
-              `{"resource":"/audio/mixes/${this._outputs[output].input.index}/inputs/mixes","type":"get"}`
-            );
-          }
-        } else if (parsedMsg.resource.includes('/inputs/mixes')) {
-          const outputMixIndex: number = parseInt(
-            parsedMsg.resource.split('/')[3]
-          );
-          for (const output in this._outputs) {
-            if (this._outputs[output].input.index === outputMixIndex) {
-              this._outputs[output].input.subMixes = Object.keys(
-                parsedMsg.body
-              ).map((key) => parseInt(key));
-            }
-          }
-        }
+        this.handleGetResponse(parsedMsg);
         break;
       case MessageTypes.SUBSCRIBE_RESPONSE:
         if (!parsedMsg.body) break;
@@ -181,6 +168,7 @@ class MessageTranslator {
         break;
       case MessageTypes.STATE_CHANGE:
         if (!parsedMsg.body) break;
+        Logger.black(JSON.stringify(parsedMsg));
         returnMessages.push(
           this.handleStateChange(parsedMsg.body as TranslatorState)
         );
@@ -190,6 +178,13 @@ class MessageTranslator {
         break;
     }
     return returnMessages.flat();
+  }
+
+  private handleGetResponse(parsedMsg: IncomingMessage) {
+    if (!parsedMsg.body) return;
+    if (parsedMsg.resource === '/audio/outputs') {
+      this._outputs = parsedMsg.body as Outputs;
+    }
   }
 
   handleStateChange(state: TranslatorState): string[] {
@@ -227,28 +222,19 @@ class MessageTranslator {
       )
         return;
 
-      const output = this.mappedOutputs(diff.path[0]);
-      if (!output) return;
-      const foundOutput = this._outputs?.[output];
-      const outputMixIndex = foundOutput?.input.index;
-      if (foundOutput && outputMixIndex && foundOutput.input.subMixes) {
-        if (foundOutput.input.subMixes[diff.lhs as unknown as number]) {
-          returnMessages.push(
-            this.generateMessage(
-              outputMixIndex,
-              foundOutput.input.subMixes[diff.lhs as unknown as number],
-              true
-            )
-          );
-        }
-        if (foundOutput.input.subMixes[diff.rhs as unknown as number]) {
-          returnMessages.push(
-            this.generateMessage(
-              outputMixIndex,
-              foundOutput.input.subMixes[diff.rhs as unknown as number]
-            )
-          );
-        }
+      const output = this.mappedOutput(diff.path[0]);
+      const outputMixIndex = output?.input.index;
+      if (outputMixIndex || outputMixIndex === 0) {
+        returnMessages.push(
+          this.generateMessage(
+            outputMixIndex,
+            diff.lhs as unknown as number,
+            true
+          )
+        );
+        returnMessages.push(
+          this.generateMessage(outputMixIndex, diff.rhs as unknown as number)
+        );
       }
     });
     return returnMessages;
@@ -257,8 +243,8 @@ class MessageTranslator {
   generateMessage(output: number, mix: number, fadeOut = false) {
     return `{"resource":"/audio/mixes/${output}/inputs/mixes/${mix}","type":"command","body":{"command":"fade","parameters":${
       fadeOut
-        ? '{"volume":0,"duration_ms":200}'
-        : '{"volume":1,"duration_ms":500}'
+        ? '{"volume":0.0,"duration_ms":200}'
+        : '{"volume":1.0,"duration_ms":500}'
     }}}`;
   }
 }
