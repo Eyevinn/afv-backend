@@ -99,7 +99,7 @@ class Agent {
           });
         }
       },
-      this._reconnectionAttempts < 6 ? 6000 : 3000
+      this._reconnectionAttempts < 6 ? 6000 : 30000
     );
   }
 
@@ -129,13 +129,14 @@ class Agent {
     Logger.red('Deleting agent: ' + this._id);
     this._isDeleting = true;
     this._websocket?.close();
+    clearInterval(this._healthCheckInterval);
     clearTimeout(this._reconnectionTimeout);
   }
 
   get status() {
     return this._websocket
       ? 'Connected'
-      : this._reconnectionAttempts < 6
+      : this._reconnectionAttempts > 0
       ? 'Reconnecting'
       : 'Disconnected';
   }
