@@ -21,6 +21,7 @@ class Agent {
   _hasSuccesfullyConnected: boolean;
   _isDeleting: boolean;
   _healthCheckInterval: ReturnType<typeof setInterval> | undefined;
+  _reconnectionTimeout: ReturnType<typeof setTimeout> | undefined;
 
   constructor(url: string, name: string) {
     this._url = url;
@@ -58,6 +59,7 @@ class Agent {
       this._websocket.onclose = (event: CloseEvent) => {
         Logger.yellow('Closing connection.');
         clearInterval(this._healthCheckInterval);
+        clearTimeout(this._reconnectionTimeout);
         this._websocket = null;
         if (event.code > 1005 && this._hasSuccesfullyConnected) {
           this.reconnect();
@@ -65,6 +67,8 @@ class Agent {
       };
 
       this._websocket.onerror = () => {
+        clearInterval(this._healthCheckInterval);
+        clearTimeout(this._reconnectionTimeout);
         const error = new Error(`Failed to connect to WebSocket: ${this._url}`);
         reject(error);
       };
@@ -83,8 +87,9 @@ class Agent {
     if (this._reconnectionAttempts === 0)
       Logger.blue('Starting reconnection...');
     this._reconnectionAttempts += 1;
-    if (this._reconnectionAttempts < 6) {
-      setTimeout(() => {
+
+    this._reconnectionTimeout = setTimeout(
+      () => {
         if (this._isDeleting) {
           Logger.magenta('Agent has been deleted. Canceling reconnection.');
         } else {
@@ -93,10 +98,9 @@ class Agent {
             Logger.red('WebSocket Reconnect Error: ' + e.message);
           });
         }
-      }, 6000);
-    } else {
-      Logger.magenta('Stopping reconnection.');
-    }
+      },
+      this._reconnectionAttempts < 6 ? 6000 : 3000
+    );
   }
 
   private subscribeToVideoNodes() {
@@ -122,8 +126,10 @@ class Agent {
   }
 
   delete() {
+    Logger.red('Deleting agent: ' + this._id);
     this._isDeleting = true;
     this._websocket?.close();
+    clearTimeout(this._reconnectionTimeout);
   }
 
   get status() {
