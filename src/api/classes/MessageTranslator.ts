@@ -140,7 +140,7 @@ class MessageTranslator {
         outputName = OutputNames.AUX_2;
         break;
       case VideoNodes.ISO_1_SELECT:
-        outputName = OutputNames.ISO_2;
+        outputName = OutputNames.ISO_1;
         break;
       case VideoNodes.ISO_2_SELECT:
         outputName = OutputNames.ISO_2;
