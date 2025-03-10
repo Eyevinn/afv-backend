@@ -29,6 +29,10 @@ class AgentControler {
     this._agents = this._agents.filter((agent) => !ids.includes(agent._id));
   }
 
+  public findAgent(id: string) {
+    return this._agents.find((agent) => agent._id === id);
+  }
+
   get serializedAgents(): Static<typeof SerializedAgents> {
     return this._agents.map((agent) => agent.serialize());
   }

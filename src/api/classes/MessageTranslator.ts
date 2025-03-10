@@ -121,10 +121,19 @@ interface Outputs {
 class MessageTranslator {
   _state: TranslatorState | null;
   _outputs: Outputs | null;
+  _fadeIn: number;
+  _fadeOut: number;
 
   constructor() {
     this._state = null;
     this._outputs = null;
+    this._fadeIn = 500;
+    this._fadeOut = 200;
+  }
+
+  public setFaders(fadeIn: number, fadeOut: number) {
+    this._fadeIn = fadeIn;
+    this._fadeOut = fadeOut;
   }
 
   mappedOutput(output: string) {
@@ -243,8 +252,8 @@ class MessageTranslator {
   generateMessage(output: number, mix: number, fadeOut = false) {
     return `{"resource":"/audio/mixes/${output}/inputs/mixes/${mix}","type":"command","body":{"command":"fade","parameters":${
       fadeOut
-        ? '{"volume":0.0,"duration_ms":200}'
-        : '{"volume":1.0,"duration_ms":500}'
+        ? `{"volume":0.0,"duration_ms":${this._fadeOut}}`
+        : `{"volume":1.0,"duration_ms":${this._fadeIn}}`
     }}}`;
   }
 }
