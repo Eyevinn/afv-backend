@@ -48,7 +48,7 @@ class Agent {
         Logger.green(`Websocket successfully connected to: ${this._url}.`);
         this.activateHealthCheck();
         this.subscribeToVideoNodes();
-        this.getAudioOutputs();
+        this.subscribeToAudioOutputs();
         resolve('Success');
       };
 
@@ -109,9 +109,10 @@ class Agent {
     this._websocket.send('{"resource":"/video/nodes","type":"subscribe"}');
   }
 
-  private getAudioOutputs() {
+  private subscribeToAudioOutputs() {
     if (!this._websocket) return;
-    this._websocket.send('{"resource":"/audio/outputs","type":"get"}');
+    Logger.yellow('Subscribing to audio output nodes');
+    this._websocket.send('{"resource":"/audio/outputs","type":"subscribe"}');
   }
 
   private handleMessage(msg: string) {

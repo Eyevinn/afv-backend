@@ -163,24 +163,29 @@ class MessageTranslator {
     const parsedMsg: IncomingMessage = JSON.parse(msg);
     const returnMessages: Array<string | string[]> = [];
     switch (parsedMsg.type) {
-      case MessageTypes.GET_RESPONSE:
-        this.handleGetResponse(parsedMsg);
-        break;
       case MessageTypes.SUBSCRIBE_RESPONSE:
         if (!parsedMsg.body) break;
-        if (!this._state) this._state = parsedMsg.body as TranslatorState;
-        else {
-          returnMessages.push(
-            this.updateState(parsedMsg.body as TranslatorState)
-          );
+        if (parsedMsg.resource === '/video/nodes') {
+          if (!this._state) this._state = parsedMsg.body as TranslatorState;
+          else {
+            returnMessages.push(
+              this.updateState(parsedMsg.body as TranslatorState)
+            );
+          }
+        } else if (parsedMsg.resource === '/audio/outputs' && parsedMsg.body) {
+          this.setOutputs(parsedMsg.body as Outputs);
         }
         break;
       case MessageTypes.STATE_CHANGE:
         if (!parsedMsg.body) break;
         Logger.black(JSON.stringify(parsedMsg));
-        returnMessages.push(
-          this.handleStateChange(parsedMsg.body as TranslatorState)
-        );
+        if (parsedMsg.resource === '/video/nodes') {
+          returnMessages.push(
+            this.handleStateChange(parsedMsg.body as TranslatorState)
+          );
+        } else if (parsedMsg.resource === '/audio/outputs') {
+          this.handleOutputStateChange(parsedMsg.body as Outputs);
+        }
         break;
       default:
       case MessageTypes.EVENT:
@@ -189,14 +194,23 @@ class MessageTranslator {
     return returnMessages.flat();
   }
 
-  private handleGetResponse(parsedMsg: IncomingMessage) {
-    if (!parsedMsg.body) return;
-    if (parsedMsg.resource === '/audio/outputs') {
-      this._outputs = parsedMsg.body as Outputs;
-    }
+  private setOutputs(outputs: Outputs) {
+    this._outputs = outputs;
   }
 
-  handleStateChange(state: TranslatorState): string[] {
+  private handleOutputStateChange(outputs: Outputs) {
+    if (!this._outputs) return [];
+    const copiedOutputs: Outputs = JSON.parse(JSON.stringify(this._outputs));
+    for (const property in outputs) {
+      copiedOutputs[property] = {
+        ...copiedOutputs[property],
+        ...outputs[property]
+      };
+    }
+    this.setOutputs(copiedOutputs);
+  }
+
+  private handleStateChange(state: TranslatorState): string[] {
     if (!this._state) return [];
     const copiedState: TranslatorState = JSON.parse(
       JSON.stringify(this._state)
