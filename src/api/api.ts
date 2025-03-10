@@ -8,6 +8,7 @@ import deleteAgent from './endpoints/delete';
 import getAgents from './endpoints/get';
 import errorHandler from './utils/error-handler';
 import setAgentFaders from './endpoints/faders';
+import healthcheck from './endpoints/healthcheck';
 
 export interface ApiOptions {
   title: string;
@@ -38,7 +39,7 @@ export default (opts: ApiOptions) => {
 
   // register a global error handler
   api.setErrorHandler(errorHandler);
-
+  api.register(healthcheck);
   api.register(getAgents);
   api.register(createAgent);
   api.register(deleteAgent);
