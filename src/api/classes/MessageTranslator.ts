@@ -254,7 +254,7 @@ class MessageTranslator {
 
       const output = this.mappedOutput(diff.path[0]);
       const outputMixIndex = output?.input.index;
-      if (outputMixIndex || outputMixIndex === 0) {
+      if (outputMixIndex) {
         returnMessages.push(
           this.generateMessage(
             outputMixIndex,
