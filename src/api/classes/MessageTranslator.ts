@@ -118,22 +118,29 @@ interface Outputs {
   [key: string]: Output;
 }
 
+export interface MessageTranslatorOptions {
+  fadeIn: number;
+  fadeOut: number;
+}
+
+const defaultOptions: MessageTranslatorOptions = {
+  fadeIn: 500,
+  fadeOut: 200
+};
+
 class MessageTranslator {
+  _options: MessageTranslatorOptions;
   _state: TranslatorState | null;
   _outputs: Outputs | null;
-  _fadeIn: number;
-  _fadeOut: number;
 
-  constructor() {
+  constructor(options?: Partial<MessageTranslatorOptions>) {
+    this._options = { ...defaultOptions, ...options };
     this._state = null;
     this._outputs = null;
-    this._fadeIn = 500;
-    this._fadeOut = 200;
   }
 
-  public setFaders(fadeIn: number, fadeOut: number) {
-    this._fadeIn = fadeIn;
-    this._fadeOut = fadeOut;
+  public updateOptions(options?: Partial<MessageTranslatorOptions>) {
+    this._options = { ...this._options, ...options };
   }
 
   mappedOutput(output: string) {
@@ -266,8 +273,8 @@ class MessageTranslator {
   generateMessage(output: number, mix: number, fadeOut = false) {
     return `{"resource":"/audio/mixes/${output}/inputs/mixes/${mix}","type":"command","body":{"command":"fade","parameters":${
       fadeOut
-        ? `{"volume":0.0,"duration_ms":${this._fadeOut}}`
-        : `{"volume":1.0,"duration_ms":${this._fadeIn}}`
+        ? `{"volume":0.0,"duration_ms":${this._options.fadeOut}}`
+        : `{"volume":1.0,"duration_ms":${this._options.fadeIn}}`
     }}}`;
   }
 }

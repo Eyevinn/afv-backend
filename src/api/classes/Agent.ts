@@ -1,14 +1,20 @@
 import { CloseEvent, MessageEvent, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { Static, Type } from '@sinclair/typebox';
-import MessageTranslator from './MessageTranslator';
+import MessageTranslator, {
+  MessageTranslatorOptions
+} from './MessageTranslator';
 import Logger from '../utils/Logger';
 
 export const SerializedAgent = Type.Object({
   name: Type.String(),
   id: Type.String(),
   url: Type.String(),
-  status: Type.String()
+  status: Type.String(),
+  options: Type.Object({
+    fadeIn: Type.Number(),
+    fadeOut: Type.Number()
+  })
 });
 
 class Agent {
@@ -23,7 +29,11 @@ class Agent {
   _healthCheckInterval: ReturnType<typeof setInterval> | undefined;
   _reconnectionTimeout: ReturnType<typeof setTimeout> | undefined;
 
-  constructor(url: string, name: string) {
+  constructor(
+    url: string,
+    name: string,
+    options?: Partial<MessageTranslatorOptions>
+  ) {
     this._url = url;
     this._name = name;
     this._reconnectionAttempts = 0;
@@ -31,7 +41,7 @@ class Agent {
     this._isDeleting = false;
     this._websocket = null;
     this._id = '';
-    this._messageTranslator = new MessageTranslator();
+    this._messageTranslator = new MessageTranslator(options);
   }
 
   connect() {
@@ -147,7 +157,8 @@ class Agent {
       name: this._name,
       id: this._id,
       url: this._url,
-      status: this.status
+      status: this.status,
+      options: this._messageTranslator._options
     };
   }
 }

@@ -12,18 +12,33 @@ const opts = {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        url: { type: 'string' }
+        url: { type: 'string' },
+        options: {
+          type: 'object',
+          properties: {
+            fadeIn: { type: 'number' },
+            fadeOut: { type: 'number' }
+          }
+        }
       }
     },
     response: {
       200: {
         description: 'Successful response',
         type: 'object',
+        required: ['url', 'name', 'id', 'status'],
         properties: {
           name: { type: 'string' },
           id: { type: 'string' },
           url: { type: 'string' },
-          status: { type: 'string' }
+          status: { type: 'string' },
+          options: {
+            type: 'object',
+            properties: {
+              fadeIn: { type: 'number' },
+              fadeOut: { type: 'number' }
+            }
+          }
         }
       }
     }
@@ -32,7 +47,13 @@ const opts = {
 
 const CreateBodyReq = Type.Object({
   url: Type.String(),
-  name: Type.String()
+  name: Type.String(),
+  options: Type.Optional(
+    Type.Object({
+      fadeIn: Type.Optional(Type.Number()),
+      fadeOut: Type.Optional(Type.Number())
+    })
+  )
 });
 
 const createAgent: FastifyPluginCallback = (fastify, _, next) => {
@@ -40,9 +61,9 @@ const createAgent: FastifyPluginCallback = (fastify, _, next) => {
     Body: Static<typeof CreateBodyReq>;
     Reply: Static<typeof SerializedAgent>;
   }>('/agents', opts, async (request, reply) => {
-    const { url, name } = request.body;
+    const { url, name, options } = request.body;
 
-    const newAgent = await AgentControler.createAgent(url, name);
+    const newAgent = await AgentControler.createAgent(url, name, options);
 
     reply.code(200).send(newAgent.serialize());
   });

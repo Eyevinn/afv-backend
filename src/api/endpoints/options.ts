@@ -1,12 +1,12 @@
 import { Static, Type } from '@sinclair/typebox';
 import { FastifyPluginCallback } from 'fastify';
 import AgentControler from '../classes/AgentControler';
+import { SerializedAgent } from '../classes/Agent';
 
 const opts = {
   schema: {
-    description: 'Set transition fading duration for an agent.',
+    description: 'Update options for an agent.',
     body: {
-      required: ['fadeIn', 'fadeOut'],
       type: 'object',
       properties: {
         fadeIn: { type: 'number' },
@@ -20,8 +20,15 @@ const opts = {
         properties: {
           name: { type: 'string' },
           id: { type: 'string' },
-          fadeIn: { type: 'number' },
-          fadeOut: { type: 'number' }
+          url: { type: 'string' },
+          status: { type: 'string' },
+          options: {
+            type: 'object',
+            properties: {
+              fadeIn: { type: 'number' },
+              fadeOut: { type: 'number' }
+            }
+          }
         }
       },
       400: {
@@ -37,41 +44,33 @@ const opts = {
   }
 };
 
-const setFadersBodyReq = Type.Object({
-  fadeIn: Type.Number(),
-  fadeOut: Type.Number()
+const putOptionsBodyReq = Type.Object({
+  fadeIn: Type.Optional(Type.Number()),
+  fadeOut: Type.Optional(Type.Number())
 });
 
-const setFadersResponseBody = Type.Object({
-  name: Type.String(),
-  id: Type.String(),
-  fadeIn: Type.Number(),
-  fadeOut: Type.Number()
-});
-
-const setFadersErrorBody = Type.Object({
+const putOptionsErrorBody = Type.Object({
   code: Type.Number(),
   message: Type.String(),
   id: Type.String()
 });
 
-const setFadersParams = Type.Object({
+const putOptionsParams = Type.Object({
   id: Type.String()
 });
 
-const setAgentFaders: FastifyPluginCallback = (fastify, _, next) => {
-  fastify.post<{
-    Body: Static<typeof setFadersBodyReq>;
-    Reply: Static<typeof setFadersResponseBody | typeof setFadersErrorBody>;
-    Params: Static<typeof setFadersParams>;
+const putAgentOptions: FastifyPluginCallback = (fastify, _, next) => {
+  fastify.put<{
+    Body: Static<typeof putOptionsBodyReq>;
+    Reply: Static<typeof SerializedAgent | typeof putOptionsErrorBody>;
+    Params: Static<typeof putOptionsParams>;
   }>('/agents/:id', opts, async (request, reply) => {
-    const { fadeIn, fadeOut } = request.body;
     const { id } = request.params;
 
     const foundAgent = AgentControler.findAgent(id);
     if (foundAgent) {
-      foundAgent?._messageTranslator.setFaders(fadeIn, fadeOut);
-      reply.code(200).send({ id, name: foundAgent?._name, fadeIn, fadeOut });
+      foundAgent?._messageTranslator.updateOptions(request.body);
+      reply.code(200).send(foundAgent.serialize());
     } else {
       reply.code(400).send({ code: 400, message: 'Could not find agent', id });
     }
@@ -79,4 +78,4 @@ const setAgentFaders: FastifyPluginCallback = (fastify, _, next) => {
   next();
 };
 
-export default setAgentFaders;
+export default putAgentOptions;

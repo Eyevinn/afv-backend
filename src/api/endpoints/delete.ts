@@ -27,7 +27,14 @@ const opts = {
             name: { type: 'string' },
             id: { type: 'string' },
             url: { type: 'string' },
-            status: { type: 'string' }
+            status: { type: 'string' },
+            options: {
+              type: 'object',
+              properties: {
+                fadeIn: { type: 'number' },
+                fadeOut: { type: 'number' }
+              }
+            }
           }
         }
       }

@@ -7,8 +7,8 @@ import createAgent from './endpoints/create';
 import deleteAgent from './endpoints/delete';
 import getAgents from './endpoints/get';
 import errorHandler from './utils/error-handler';
-import setAgentFaders from './endpoints/faders';
 import healthcheck from './endpoints/healthcheck';
+import putAgentOptions from './endpoints/options';
 
 export interface ApiOptions {
   title: string;
@@ -43,7 +43,7 @@ export default (opts: ApiOptions) => {
   api.register(getAgents);
   api.register(createAgent);
   api.register(deleteAgent);
-  api.register(setAgentFaders);
+  api.register(putAgentOptions);
 
   return api;
 };

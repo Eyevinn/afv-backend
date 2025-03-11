@@ -11,7 +11,7 @@ const HealthcheckResponse = Type.String();
 
 const healthcheck: FastifyPluginCallback = (fastify, _, next) => {
   fastify.get<{ Reply: Static<typeof HealthcheckResponse> }>(
-    '/healthcheck',
+    '/',
     opts,
     async (_, reply) => {
       reply.send('Alive and well!');

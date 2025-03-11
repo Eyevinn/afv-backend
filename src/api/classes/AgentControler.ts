@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import Agent, { SerializedAgent } from './Agent';
+import { MessageTranslatorOptions } from './MessageTranslator';
 
 export const SerializedAgents = Type.Array(SerializedAgent);
 
@@ -14,9 +15,13 @@ class AgentControler {
     return !this._agents.find((agent) => agent._url === url);
   }
 
-  async createAgent(url: string, name: string) {
+  async createAgent(
+    url: string,
+    name: string,
+    options?: Partial<MessageTranslatorOptions>
+  ) {
     if (!this.isUniqueUrl(url)) throw new Error('WebSocket URL already in use');
-    const newAgent = new Agent(url, name);
+    const newAgent = new Agent(url, name, options);
     await newAgent.connect();
     this._agents.push(newAgent);
     return newAgent;
