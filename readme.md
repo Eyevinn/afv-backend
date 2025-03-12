@@ -50,6 +50,8 @@ To build a docker image and run it in a simple container run:
 docker-compose up
 ```
 
+There is a github action that creates and deploys a Docker image called "Trigger build of Docker Image".
+
 ### Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md)
