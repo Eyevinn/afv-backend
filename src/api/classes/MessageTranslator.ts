@@ -271,11 +271,14 @@ class MessageTranslator {
   }
 
   generateMessage(output: number, mix: number, fadeOut = false) {
-    return `{"resource":"/audio/mixes/${output}/inputs/mixes/${mix}","type":"command","body":{"command":"fade","parameters":${
-      fadeOut
-        ? `{"volume":0.0,"duration_ms":${this._options.fadeOut}}`
-        : `{"volume":1.0,"duration_ms":${this._options.fadeIn}}`
-    }}}`;
+    const fadeDuration = fadeOut ? this._options.fadeOut : this._options.fadeIn;
+    const newVolume = fadeOut ? 0.0 : 1.0;
+    const type = fadeDuration === 0 ? 'set' : 'command';
+    const body =
+      type === 'set'
+        ? `{"volume": ${newVolume}}`
+        : `{"command":"fade","parameters":${`{"volume":${newVolume},"duration_ms":${fadeDuration}}`}}`;
+    return `{"resource":"/audio/mixes/${output}/inputs/mixes/${mix}","type":"${type}","body":${body}}`;
   }
 }
 

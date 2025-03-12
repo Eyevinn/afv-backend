@@ -11,8 +11,8 @@ const opts = {
       required: ['url', 'name'],
       type: 'object',
       properties: {
-        name: { type: 'string' },
-        url: { type: 'string' },
+        name: { type: 'string', minLength: 1 },
+        url: { type: 'string', minLength: 1 },
         options: {
           type: 'object',
           properties: {
