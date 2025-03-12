@@ -7,6 +7,8 @@ const opts = {
   }
 };
 
+export const healthcheckResponse = 'Alive and well!';
+
 const HealthcheckResponse = Type.String();
 
 const healthcheck: FastifyPluginCallback = (fastify, _, next) => {
@@ -14,7 +16,7 @@ const healthcheck: FastifyPluginCallback = (fastify, _, next) => {
     '/',
     opts,
     async (_, reply) => {
-      reply.send('Alive and well!');
+      reply.send(healthcheckResponse);
     }
   );
   next();
