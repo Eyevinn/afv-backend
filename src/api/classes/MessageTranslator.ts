@@ -147,19 +147,19 @@ class MessageTranslator {
     let outputName = '';
     switch (output) {
       case VideoNodes.TRANSITION:
-        outputName = OutputNames.PROGRAM;
+        outputName = process.env.TRANSITION_OUTPUT || OutputNames.PROGRAM;
         break;
       case VideoNodes.AUX_1_SELECT:
-        outputName = OutputNames.AUX_1;
+        outputName = process.env.AUX_1_OUTPUT || OutputNames.AUX_1;
         break;
       case VideoNodes.AUX_2_SELECT:
-        outputName = OutputNames.AUX_2;
+        outputName = process.env.AUX_2_OUTPUT || OutputNames.AUX_2;
         break;
       case VideoNodes.ISO_1_SELECT:
-        outputName = OutputNames.ISO_1;
+        outputName = process.env.ISO_1_OUTPUT || OutputNames.ISO_1;
         break;
       case VideoNodes.ISO_2_SELECT:
-        outputName = OutputNames.ISO_2;
+        outputName = process.env.ISO_2_OUTPUT || OutputNames.ISO_2;
         break;
     }
     if (!outputName) return;
