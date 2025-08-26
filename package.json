@@ -1,6 +1,6 @@
 {
   "name": "afv-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Audio follow video service using websocket connections. A test websocket server is included.",
   "scripts": {
     "test": "jest",
