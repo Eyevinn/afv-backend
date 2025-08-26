@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dev": "nodemon",
     "dev-server": "ts-node src/server/server.ts",
-    "start": "ts-node -T src/api/server.ts"
+    "start": "ts-node -T src/api/server.ts",
+    "postversion": "git push && git push --tags"
   },
   "license": "MIT",
   "engines": {
