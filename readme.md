@@ -1,73 +1,133 @@
-# AFV-BACKEND
+# AFV Backend
 
-## Requirements
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](./LICENSE)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.15.0-brightgreen.svg)](https://nodejs.org/)
 
-Node.js >= 18.15.0 ( LTS )
+Audio follow video service using websocket connections. A test websocket server is included.
 
-## Installation / Usage
+## Features
 
-To install dependencies run:
+- WebSocket-based audio-video synchronization
+- Real-time communication protocols
+- Built-in test server for development
+- Docker support for easy deployment
+- RESTful API with Fastify framework
 
+## Prerequisites
+
+- Node.js >= 18.15.0 (LTS)
+- npm or yarn package manager
+
+## Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone <repository-url>
+cd afv-backend
+npm install
 ```
-npm i
-```
 
-To start the AFV-Backend run:
+## Usage
 
-```
+### Production
+
+Start the AFV Backend server:
+
+```bash
 npm start
 ```
 
-## Development
+### Development
 
-To start the AFV-Backend in dev mode run:
+Start the server in development mode with hot reload:
 
-```
+```bash
 npm run dev
 ```
 
-A websocket server is also available in the project to test the AFV-Backend. To start the websocket server run:
+#### Test WebSocket Server
 
-```
+The project includes a WebSocket test server for development:
+
+```bash
 npm run dev-server
 ```
 
-Once the websoket server is running and you have established a websocket connection with the server, you can press the 0-9 keys to send messages to the AFV-Backend. The messages can be changes by editing the file src/server/messages.ts.
+Once the WebSocket server is running, establish a connection and press keys 0-9 to send test messages. You can customize these messages by editing `src/server/messages.ts`.
 
 ## Deployment
 
-If you have docker installed on your local machine you may create a docker image and run it in a simple container.
+### Docker
 
-To create a docker image taged "afv-backend" run:
+Build and run using Docker:
 
-```
-docker build -t=afv-backend .
-```
+```bash
+# Build image
+docker build -t afv-backend .
 
-To build a docker image and run it in a simple container run:
-
-```
+# Run with docker-compose
 docker-compose up
 ```
 
-There is a github action that creates and deploys a Docker image called "Trigger build of Docker Image".
+### CI/CD
 
-### Contributing
+The project includes a GitHub Action workflow called "Trigger build of Docker Image" for automated builds and deployments.
 
-See [CONTRIBUTING](CONTRIBUTING.md)
+## Development
 
-# Support
+### Scripts
 
-Join our [community on Slack](http://slack.streamingtech.se) where you can post any questions regarding any of our open source projects. Eyevinn's consulting business can also offer you:
+- `npm test` - Run tests
+- `npm run lint` - Run ESLint
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run pretty` - Check code formatting
+
+### Project Structure
+
+```
+src/
+├── api/          # API server implementation
+├── server/       # WebSocket test server
+└── ...
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
+
+### License Summary
+
+You are free to:
+
+- Use, modify, and distribute the software
+- Create derivative works
+- Use it for personal, educational, or research purposes
+
+**Important**: The AGPL-3.0 license requires that if you distribute this software or run it as a network service, you must also make the source code (including any modifications) available under the same license terms.
+
+For commercial licensing or if the AGPL-3.0 terms don't meet your needs, please contact [sales@eyevinn.se](mailto:sales@eyevinn.se).
+
+## Support
+
+Join our [community on Slack](http://slack.streamingtech.se) where you can post questions regarding any of our open source projects.
+
+Eyevinn's consulting services include:
 
 - Further development of this component
-- Customization and integration of this component into your platform
-- Support and maintenance agreement
+- Customization and integration into your platform
+- Support and maintenance agreements
 
-Contact [sales@eyevinn.se](mailto:sales@eyevinn.se) if you are interested.
+Contact [sales@eyevinn.se](mailto:sales@eyevinn.se) for more information.
 
-# About Eyevinn Technology
+## About Eyevinn Technology
 
-[Eyevinn Technology](https://www.eyevinntechnology.se) is an independent consultant firm specialized in video and streaming. Independent in a way that we are not commercially tied to any platform or technology vendor. As our way to innovate and push the industry forward we develop proof-of-concepts and tools. The things we learn and the code we write we share with the industry in [blogs](https://dev.to/video) and by open sourcing the code we have written.
+[Eyevinn Technology](https://www.eyevinntechnology.se) is an independent consultant firm specialized in video and streaming. We are not commercially tied to any platform or technology vendor, allowing us to provide unbiased solutions.
 
-Want to know more about Eyevinn and how it is to work here. Contact us at work@eyevinn.se!
+As part of our commitment to innovation, we develop proof-of-concepts and open source tools. We share our knowledge through [technical blogs](https://dev.to/video) and by open sourcing our code.
+
+Interested in working with us? Contact us at work@eyevinn.se!
