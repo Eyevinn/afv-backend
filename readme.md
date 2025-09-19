@@ -103,6 +103,7 @@ This project is licensed under the GNU Affero General Public License v3.0 (AGPL-
 ### License Summary
 
 You are free to:
+
 - Use, modify, and distribute the software
 - Create derivative works
 - Use it for personal, educational, or research purposes
@@ -116,6 +117,7 @@ For commercial licensing or if the AGPL-3.0 terms don't meet your needs, please 
 Join our [community on Slack](http://slack.streamingtech.se) where you can post questions regarding any of our open source projects.
 
 Eyevinn's consulting services include:
+
 - Further development of this component
 - Customization and integration into your platform
 - Support and maintenance agreements
